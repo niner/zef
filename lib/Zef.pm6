@@ -149,7 +149,7 @@ role Pluggable {
     }
 }
 
-role Phaser[*@types] {
+role Phased[*@types] {
     method pre(*@args) { * };
     method post(*@args) { * };
     method types { @types; };

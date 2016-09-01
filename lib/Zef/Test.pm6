@@ -1,11 +1,11 @@
 use Zef;
 
-class Zef::Test does Pluggable does Phaser {
+class Zef::Test does Pluggable {
     method test($path, :@includes, Supplier :$logger) {
         die "Can't test non-existent path: {$path}" unless $path.IO.e;
 
         .pre($path, @includes, $logger) for self!list-plugins.grep({
-          $_ ~~ Phaser && $_.^can('pre') && 
+          $_ ~~ Phased && $_.^can('pre') && 
           $_.^can('types') && $_.types.grep($?CLASS);
         });
 
@@ -24,7 +24,7 @@ class Zef::Test does Pluggable does Phaser {
         $tester.stderr.done;
 
         .post($path, @includes, $logger, $tester, @got) for self!list-plugins.grep({
-          $_ ~~ Phaser && $_.^can('post') &&
+          $_ ~~ Phased && $_.^can('post') &&
           $_.^can('types') && $_.types.grep($?CLASS);
         });
 
