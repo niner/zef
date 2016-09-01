@@ -412,7 +412,7 @@ package Zef::CLI {
     }
 
     # Filter/mutate out verbosity flags from @*ARGS and return a verbosity level
-    sub preprocess-args-verbosity-mutate(*@_) {
+    sub preprocess-args-verbosity-mutate(*@_) is export {
         my (:@log-level, :@filtered-args) := @_.classify: {
             $_ ~~ any(<--fatal --error --warn --info -v --verbose --debug --trace>)
                 ?? <log-level>
@@ -437,7 +437,7 @@ package Zef::CLI {
     # Note that `name` can match the config plugin key `short-name` or `module`
     # * Now also removes --config-path $path parameters
     # TODO: Turn this into a more general getopts
-    sub preprocess-args-config-mutate(*@args) {
+    sub preprocess-args-config-mutate(*@args) is export {
         # get/remove --config-path=xxx
         # MUTATES @*ARGS
         my Str $config-path-from-args;
@@ -478,7 +478,7 @@ package Zef::CLI {
         $config;
     }
 
-    sub get-client(*%_) {
+    sub get-client(*%_) is export {
         my $client = Zef::Client.new(|%_);
         my $logger = $client.logger;
         my $log    = $logger.Supply.grep({ .<level> <= $verbosity });
@@ -498,7 +498,7 @@ package Zef::CLI {
         || CompUnit::RepositoryRegistry.repository-for-spec(~$target, :next-repo($*REPO));
     }
 
-    sub path2candidate($path) {
+    sub path2candidate($path) is export {
         Candidate.new(
                 as   => $path,
                 uri  => $path.IO.absolute,

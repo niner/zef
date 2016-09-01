@@ -3,6 +3,10 @@ use Zef::Utils::URI;
 
 class Zef::Fetch does Pluggable {
     method fetch($uri, $save-as, Supplier :$logger) {
+        .pre($uri, $save-as, $logger) for self!list-plugins.grep({
+          $_ ~~ Phaser && $_.^can('pre') && 
+          $_.^can('types') && $_.types.grep($?CLASS);
+        });
         my $fetcher = self.plugins.first(*.fetch-matcher($uri));
 
         die "No fetching backend available" unless ?$fetcher;
@@ -18,6 +22,10 @@ class Zef::Fetch does Pluggable {
         $fetcher.stdout.done;
         $fetcher.stderr.done;
 
+        .post($uri, $save-as, $logger, $fetcher, $got) for self!list-plugins.grep({
+          $_ ~~ Phaser && $_.^can('post') && 
+          $_.^can('types') && $_.types.grep($?CLASS);
+        });
         return $got;
     }
 }

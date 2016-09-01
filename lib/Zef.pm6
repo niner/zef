@@ -124,7 +124,7 @@ role Pluggable {
             next() R, DEBUG($plugin, "\t(SKIP) Not enabled")\
                 if $plugin<enabled>:exists && (!$plugin<enabled> || $plugin<enabled> eq "0");
 
-            next() R, DEBUG($plugin, "\t(SKIP) Plugin could not be loaded")\
+            next() R, DEBUG($plugin, "\t(SKIP) Plugin could not be loaded ($module)")\
                 if (try require ::($ = $module)) ~~ Nil;
 
             DEBUG($plugin, "\t(OK) Plugin loaded successful");
@@ -147,4 +147,10 @@ role Pluggable {
             take $class;
         }
     }
+}
+
+role Phaser[*@types] {
+    method pre(*@args) { * };
+    method post(*@args) { * };
+    method types { @types; };
 }
