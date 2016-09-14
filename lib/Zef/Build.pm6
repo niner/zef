@@ -5,7 +5,7 @@ class Zef::Build does Pluggable {
         die "Can't build non-existent path: {$path}" unless $path.IO.e;
 
         .pre($path, @includes, $logger) for self!list-plugins.grep({
-          $_ ~~ Phased && $_.^can('pre') && 
+          $_ ~~ Hookable && $_.^can('pre') && 
           $_.^can('types') && $_.types.grep($?CLASS);
         });
 
@@ -24,7 +24,7 @@ class Zef::Build does Pluggable {
         $builder.stderr.done;
 
         .post($path, @includes, $logger, $builder, $got) for self!list-plugins.grep({
-          $_ ~~ Phased && $_.^can('post') && 
+          $_ ~~ Hookable && $_.^can('post') && 
           $_.^can('types') && $_.types.grep($?CLASS);
         });
 
