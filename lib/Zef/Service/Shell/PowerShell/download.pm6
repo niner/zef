@@ -3,6 +3,8 @@ use Zef::Shell;
 use Zef::Service::Shell::PowerShell;
 
 class Zef::Service::Shell::PowerShell::download is Zef::Service::Shell::PowerShell does Fetcher does Messenger {
+    has $.timeout is default(0);
+
     method fetch-matcher($url) { $ = $url.lc.starts-with('http://' | 'https://') }
     method probe { nextsame }
 
@@ -23,7 +25,7 @@ class Zef::Service::Shell::PowerShell::download is Zef::Service::Shell::PowerShe
 
     method fetch($url, $save-as) {
         mkdir($save-as.IO.parent) unless $save-as.IO.parent.IO.e;
-        my $proc = $.zrun(%?RESOURCES<scripts/win32http.ps1>, $url, $save-as);
+        my $proc = $.zrun(%?RESOURCES<scripts/win32http.ps1>, $url, $save-as, $!timeout);
         ?$proc ?? $save-as !! False;
     }
 }

@@ -58,7 +58,8 @@
             "short-name" : "git",
             "module" : "Zef::Service::Shell::git",
             "options" : {
-                "scheme" : "https"
+                "scheme" : "https",
+                "timeout" : 600
             }
         },
         {
@@ -67,15 +68,24 @@
         },
         {
             "short-name" : "wget",
-            "module" : "Zef::Service::Shell::wget"
+            "module" : "Zef::Service::Shell::wget",
+            "options" : {
+                "timeout" : 600
+            }
         },
         {
             "short-name" : "curl",
-            "module" : "Zef::Service::Shell::curl"
+            "module" : "Zef::Service::Shell::curl",
+            "options" : {
+                "timeout" : 600
+            }
         },
         {
             "short-name" : "pswebrequest",
-            "module" : "Zef::Service::Shell::PowerShell::download"
+            "module" : "Zef::Service::Shell::PowerShell::download",
+            "options" : {
+                "timeout" : 600
+            }
         }
     ],
     "Extract" : [

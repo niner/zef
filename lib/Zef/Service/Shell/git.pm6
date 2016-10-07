@@ -5,13 +5,15 @@ use Zef::Utils::URI;
 # todo: have a similar interface for git fetch/extract via `run` but using --archive
 
 my role GitFetcher {
+    has $.timeout;
     has $.scheme;
 
     # FETCH (clone/pull) INTERFACE
     method fetch-matcher($url) {
         if uri($url) -> $uri {
             return True if $uri.scheme.lc eq 'git';
-            return True if $uri.scheme.lc.starts-with('http' | 'ssh') && $uri.path.ends-with('.git' || '.git/');
+            return True if $uri.scheme.lc.starts-with('http' | 'ssh')
+                        && $uri.path.ends-with('.git' || '.git/');
         }
         False;
     }
@@ -20,8 +22,13 @@ my role GitFetcher {
         # allow overriding the default scheme of git urls
         my $url = $!scheme ?? $orig-url.subst(/^\w+ '://'/, "{$!scheme}://") !! $orig-url;
 
-        my $clone-proc := $.zrun('git', 'clone', $url, $save-as.IO.abspath, '--quiet', :cwd($save-as.IO.parent));
-        my $pull-proc  := $.zrun('git', 'pull', '--quiet', :cwd($save-as.IO.abspath));
+        my $env = %*ENV andthen {
+            .<GIT_HTTP_LOW_SPEED_LIMIT> = 1000      if $!timeout;
+            .<GIT_HTTP_LOW_SPEED_TIME>  = $!timeout if $!timeout;
+        }
+
+        my $clone-proc := $.zrun('git', 'clone', $url, $save-as.IO.abspath, '--quiet', :cwd($save-as.IO.parent), :$env);
+        my $pull-proc  := $.zrun('git', 'pull', '--quiet', :cwd($save-as.IO.abspath), :$env);
 
         return ?$clone-proc || ?$pull-proc ?? $save-as !! False;
     }
